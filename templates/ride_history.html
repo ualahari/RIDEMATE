@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RideMate | Ride History</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+    --primary:#2f4f4f;
+    --secondary:#9caf88;
+    --background:#c7d5c1;
+    --card:#ffffff;
+    --shadow:rgba(0,0,0,.08);
+
+    --blue:#2563eb;
+    --green:#16a34a;
+    --red:#ef4444;
+    --pink:#b56576;
+
+}
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+
+}
+
+body{
+
+    background:var(--background);
+    display:flex;
+    min-height:100vh;
+
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:260px;
+    height:100vh;
+
+    background:var(--secondary);
+
+    padding:35px 20px;
+
+}
+
+.logo{
+
+    text-align:center;
+    font-size:36px;
+    font-weight:900;
+    color:var(--primary);
+
+    margin-bottom:40px;
+
+}
+
+.sidebar a{
+
+    display:block;
+
+    text-decoration:none;
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    margin-bottom:12px;
+
+    transition:.3s;
+
+}
+
+.sidebar a:hover{
+
+    background:white;
+
+}
+
+.active{
+
+    background:white;
+
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+
+    margin-left:260px;
+
+    width:calc(100% - 260px);
+
+    padding:40px;
+
+}
+
+.title{
+
+    font-size:44px;
+
+    font-weight:900;
+
+    color:var(--primary);
+
+    margin-bottom:10px;
+
+}
+
+.subtitle{
+
+    color:#555;
+
+    margin-bottom:35px;
+
+}
+
+/* ================= SECTION ================= */
+
+.section-title{
+
+    font-size:28px;
+
+    color:var(--primary);
+
+    margin-bottom:20px;
+
+    font-weight:800;
+
+}
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+
+    gap:25px;
+
+    margin-bottom:45px;
+
+}
+
+/* ================= CARD ================= */
+
+.card{
+
+    background:var(--card);
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px var(--shadow);
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    padding:7px 14px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+.passenger{
+
+    background:#dbeafe;
+
+    color:var(--blue);
+
+}
+
+.driver{
+
+    background:#dcfce7;
+
+    color:var(--green);
+
+}
+
+.route{
+
+    font-size:28px;
+
+    font-weight:800;
+
+    color:var(--primary);
+
+    margin:18px 0;
+
+}
+
+.info{
+
+    margin:10px 0;
+
+    color:#444;
+
+    font-size:16px;
+
+}
+
+.divider{
+
+    border:none;
+
+    border-top:1px solid #eee;
+
+    margin:20px 0;
+
+}.action-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.route-btn{
+
+    text-decoration:none;
+
+    color:var(--primary);
+
+    font-weight:700;
+
+}
+
+.confirmed{
+
+    color:var(--green);
+
+    font-weight:700;
+
+}
+
+.women{
+
+    display:inline-block;
+
+    margin-top:10px;
+
+    background:#ffe4ec;
+
+    color:var(--pink);
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+.passenger-box{
+
+    background:#f8fafc;
+
+    border-left:5px solid var(--green);
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-bottom:12px;
+
+}
+
+.cancel-btn{
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:13px;
+
+    background:var(--red);
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+}
+
+.cancel-btn:hover{
+
+    background:#dc2626;
+
+}
+
+.empty{
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    color:#666;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+<div class="logo">
+
+RideMate
+
+</div>
+
+<a href="/dashboard">
+🏠 Dashboard
+</a>
+
+<a href="/offer_ride">
+🚗 Offer Ride
+</a>
+
+<a href="/ride_history" class="active">
+📜 Ride History
+</a>
+
+<a href="/ride_route">
+📍 Live Route
+</a>
+
+<a href="/support">
+🎧 Support
+</a>
+
+<a href="/logout">
+🚪 Logout
+</a>
+
+</div>
+
+<!-- ================= CONTENT ================= -->
+
+<div class="content">
+
+<h1 class="title">
+
+Your Journey Log 📜
+
+</h1>
+
+<p class="subtitle">
+
+View all rides you've booked and offered.
+
+</p>
+<!-- ================= PASSENGER HISTORY ================= -->
+
+<h2 class="section-title">
+
+🎟️ Booked as Passenger
+
+</h2>
+
+<div class="cards">
+
+{% for ride, driver, booking in booked_rides %}
+
+<div class="card">
+
+    <span class="badge passenger">
+
+        Passenger
+
+    </span>
+
+    <div class="route">
+
+        {{ ride.route_from }}
+        →
+
+        {{ ride.route_to }}
+
+    </div>
+
+    <div class="info">
+
+        👤 <b>Driver:</b>
+
+        {{ driver.name }}
+
+    </div>
+
+    {% if booking %}
+
+    <div class="info">
+
+        📞 <b>Contact:</b>
+
+        {{ driver.contact }}
+
+    </div>
+
+    <div class="info">
+
+        🚨 <b>Emergency:</b>
+
+        {{ driver.emergency_contact }}
+
+    </div>
+
+    {% else %}
+
+    <div class="info" style="color:#ef4444;">
+
+        🔒 Driver contact is available after booking.
+
+    </div>
+
+    {% endif %}
+
+    <div class="info">
+
+        🚗 <b>Vehicle:</b>
+
+        {{ ride.vehicle_type }}
+
+    </div>
+
+    <div class="info">
+
+        📅 <b>Date:</b>
+
+        {{ ride.departure_time }}
+
+    </div>
+
+    {% if ride.women_only %}
+
+    <div class="women">
+
+        🌸 Women Only Ride
+
+    </div>
+
+    {% endif %}
+
+    <hr class="divider">
+
+    <div class="action-row">
+
+        <span class="confirmed">
+
+            Confirmed ✅
+
+        </span>
+
+        <a
+        href="/live_tracking/{{ ride.id }}"
+        class="route-btn">
+
+            View Route →
+
+        </a>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+    <h3>
+
+        🚗 No Booked Rides
+
+    </h3>
+
+    <br>
+
+    <p>
+
+        You haven't booked any rides yet.
+
+    </p>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<!-- ================= DRIVER HISTORY ================= -->
+
+<h2 class="section-title">
+
+🚗 Offered as Driver
+
+</h2>
+
+<div class="cards">
+
+{% for ride in offered_rides %}
+
+<div class="card">
+
+<span class="badge driver">
+
+Driver
+
+</span>
+
+<div class="route">
+
+{{ ride.route_from }}
+
+→
+
+{{ ride.route_to }}
+
+</div>
+
+<div class="info">
+
+🚗 <b>Vehicle:</b>
+
+{{ ride.vehicle_type }}
+
+</div>
+
+<div class="info">
+
+📅 <b>Date:</b>
+
+{{ ride.departure_time }}
+
+</div>
+
+<div class="info">
+
+💺 <b>Seats Left:</b>
+
+{{ ride.seats_available }}
+
+</div>
+<hr class="divider">
+
+<h3 style="color:var(--primary);margin-bottom:15px;">
+
+👥 Booked Passengers
+
+</h3>
+
+{% if passenger_map[ride.id] %}
+
+    {% for passenger in passenger_map[ride.id] %}
+
+    <div class="passenger-box">
+
+        <div style="font-size:17px;font-weight:700;">
+
+            👤 {{ passenger.name }}
+
+        </div>
+
+        <div style="margin-top:8px;">
+
+            📞 <b>Contact:</b>
+
+            {{ passenger.contact }}
+
+        </div>
+
+        {% if passenger.emergency_contact %}
+
+        <div style="margin-top:6px;">
+
+            🚨 <b>Emergency:</b>
+
+            {{ passenger.emergency_contact }}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+<div class="empty" style="padding:20px;">
+
+    No passengers have booked this ride yet.
+
+</div>
+
+{% endif %}
+
+{% if ride.women_only %}
+
+<div class="women">
+
+🌸 Women Only Ride
+
+</div>
+
+{% endif %}
+
+{% if ride.status != "Completed" %}
+
+<form
+action="/cancel_ride/{{ ride.id }}"
+method="POST">
+
+<button
+class="cancel-btn"
+type="submit"
+onclick="return confirm('Are you sure you want to cancel this ride?');">
+
+❌ Cancel Ride
+
+</button>
+
+</form>
+
+{% else %}
+
+<div style="
+margin-top:20px;
+padding:12px;
+background:#dcfce7;
+color:#166534;
+border-radius:10px;
+font-weight:700;
+text-align:center;">
+
+✅ Ride Completed
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+<h3>
+
+🚗 No Offered Rides
+
+</h3>
+
+<br>
+
+<p>
+
+You haven't offered any rides yet.
+
+</p>
+
+</div>
+
+{% endfor %}
+
+</div>
+</div>
+
+</body>
+
+</html>

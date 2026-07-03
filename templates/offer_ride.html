@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RIDE MATE | Offer a Ride</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        :root{
+            --base-sage:#c7d5c1;
+            --mid-sage:#9caf88;
+            --deep-sage:#2f4f4f;
+            --accent-cream:#f4f1de;
+
+            --primary-main:{{ '#b56576' if is_women_only else '#2f4f4f' }};
+            --secondary-main:{{ '#e5989b' if is_women_only else '#9caf88' }};
+            --bg-main:{{ '#fdf2f4' if is_women_only else '#c7d5c1' }};
+            --nav-active:rgba(255,255,255,.4);
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Inter,sans-serif;
+        }
+
+        body{
+            background:var(--bg-main);
+            display:flex;
+            min-height:100vh;
+        }
+
+        .sidebar-wrapper{
+            width:280px;
+            background:var(--secondary-main);
+            position:fixed;
+            left:0;
+            top:0;
+            height:100vh;
+            padding:40px 20px;
+            display:flex;
+            flex-direction:column;
+            box-shadow:4px 0 20px rgba(0,0,0,.08);
+        }
+
+        .sidebar-wrapper h2{
+            color:var(--deep-sage);
+            text-align:center;
+            margin-bottom:45px;
+            font-size:28px;
+        }
+
+        .sidebar-wrapper a{
+            text-decoration:none;
+            color:var(--deep-sage);
+            padding:15px 20px;
+            border-radius:14px;
+            margin-bottom:8px;
+            transition:.3s;
+            font-weight:bold;
+        }
+
+        .sidebar-wrapper a:hover,
+        .sidebar-wrapper .active{
+            background:rgba(255,255,255,.45);
+            padding-left:28px;
+        }
+
+        .main-content{
+            margin-left:280px;
+            width:calc(100% - 280px);
+            padding:40px;
+        }
+
+        .glass-card{
+            max-width:850px;
+            background:rgba(255,255,255,.45);
+            backdrop-filter:blur(12px);
+            border-radius:25px;
+            padding:35px;
+            box-shadow:0 10px 25px rgba(0,0,0,.08);
+        }
+
+        .form-group{
+            margin-bottom:20px;
+        }
+
+        label{
+            display:block;
+            font-weight:700;
+            color:var(--deep-sage);
+            margin-bottom:8px;
+        }
+
+        .form-control{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:12px;
+            background:white;
+            font-size:15px;
+        }
+
+        .form-control:focus{
+            outline:none;
+            border:2px solid var(--primary-main);
+        }
+
+        .btn-action{
+            width:100%;
+            padding:15px;
+            background:var(--primary-main);
+            color:white;
+            border:none;
+            border-radius:14px;
+            cursor:pointer;
+            font-size:17px;
+            font-weight:bold;
+            transition:.3s;
+        }
+
+        .btn-action:hover{
+            transform:translateY(-2px);
+        }
+
+        /* Women Card */
+
+        .checkbox-wrapper{
+            display:flex;
+            align-items:center;
+            gap:15px;
+            padding:18px;
+            border-radius:16px;
+            background:white;
+            cursor:pointer;
+            transition:.35s;
+            border:2px solid transparent;
+            margin-bottom:25px;
+        }
+
+        .checkbox-wrapper:hover{
+            border-color:#e5989b;
+        }
+
+        .checkbox-wrapper.active{
+            background:#fff0f5;
+            border-color:#e5989b;
+        }
+
+        .checkbox-wrapper input{
+            width:22px;
+            height:22px;
+            accent-color:#b56576;
+        }
+
+        .women-note{
+            font-size:14px;
+            color:#b56576;
+            margin-top:10px;
+            margin-left:40px;
+            line-height:22px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="sidebar-wrapper">
+
+    <h2>RIDE MATE</h2>
+
+    <a href="/dashboard">🌿 Dashboard</a>
+
+    <a href="/offer_ride" class="active">
+        🚗 Offer Ride
+    </a>
+
+    <a href="/ride_history">
+        📜 Ride History
+    </a>
+
+    <a href="/ride_route">
+        📍 Ride Route
+    </a>
+
+    <a href="/support">
+        🎧 Support
+    </a>
+
+    <a href="/logout" style="margin-top:auto;color:#dc2626;">
+        🚪 Logout
+    </a>
+
+</div>
+
+<div class="main-content">
+
+<h1 style="color:var(--primary-main);font-size:38px;margin-bottom:10px;">
+Share your Journey 🌱
+</h1>
+
+<p style="margin-bottom:35px;color:#555;">
+Help reduce carbon emissions while travelling.
+</p>
+
+<div class="glass-card">
+
+<form action="/offer_ride" method="POST">
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+<div class="form-group">
+
+<label>Starting Point</label>
+
+<input
+type="text"
+name="route_from"
+class="form-control"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Destination</label>
+
+<input
+type="text"
+name="route_to"
+class="form-control"
+required>
+
+</div>
+
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">
+
+<div class="form-group">
+
+<label>Departure</label>
+
+<input
+type="datetime-local"
+name="departure_time"
+class="form-control"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Vehicle</label>
+
+<select
+name="vehicle_type"
+class="form-control">
+
+<option>🚗 Car</option>
+
+<option>🏍 Bike</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label>Seats</label>
+
+<input
+type="number"
+name="seats_available"
+class="form-control"
+min="1"
+max="6"
+value="1">
+
+</div>
+
+</div>
+<!-- ================= WOMEN ONLY OPTION ================= -->
+
+{% if session.get("gender") == "Female" %}
+
+<label class="checkbox-wrapper" id="womenCard">
+
+    <input
+        type="checkbox"
+        id="womenOnly"
+        name="is_women_only"
+        value="true">
+
+    <div>
+
+        <span style="
+            font-size:18px;
+            font-weight:bold;
+            color:#b56576;">
+
+            🌸 Women Only Ride
+
+        </span>
+
+        <div class="women-note">
+
+            ✔ Only female passengers can view and book this ride.<br>
+
+            🛡 Extra safety and privacy for women commuters.
+
+        </div>
+
+    </div>
+
+</label>
+
+{% else %}
+
+<div style="
+background:#f8f8f8;
+border-left:5px solid #d1d5db;
+padding:18px;
+border-radius:12px;
+margin-bottom:25px;">
+
+<b>Women Only Ride</b><br>
+
+<span style="color:#666;font-size:14px;">
+
+Only female drivers can create Women Only rides.
+
+</span>
+
+</div>
+
+{% endif %}
+
+
+<button
+type="submit"
+class="btn-action">
+
+🚗 Publish Ride
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+const womenCheck = document.getElementById("womenOnly");
+
+const womenCard = document.getElementById("womenCard");
+
+if(womenCheck){
+
+    womenCheck.addEventListener("change",function(){
+
+        if(this.checked){
+
+            womenCard.classList.add("active");
+
+        }
+
+        else{
+
+            womenCard.classList.remove("active");
+
+        }
+
+    });
+
+}
+
+</script>
+
+</body>
+
+</html>

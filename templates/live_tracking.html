@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ride Route</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            display: flex;
+            background: #f4f4f4;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background: #497643;
+            color: white;
+            padding: 20px;
+            position: ;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(99, 192, 131, 0.1);
+            border-radius: 8px;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 260px;
+            padding: 20px;
+            width: calc(100% - 260px);
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        #map {
+            height: 450px;
+            border-radius: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .route-title {
+            font-weight: bold;
+            color: #2f4f4f;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🚗 RideMate</h2>
+
+    <a href="/dashboard">🏠 Dashboard</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <h1>          Live Route (Static View)</h1>
+
+    {% if ride is none %}
+
+        <div class="box" style="text-align:center;">
+            <h2 style="color:red;">🚫 No Ride Available</h2>
+            <a href="/dashboard">Back</a>
+        </div>
+
+    {% else %}
+
+    <!-- ROUTE INFO -->
+    <div class="box">
+        <div class="route-title">
+            {{ ride.route_from }} ➜ {{ ride.route_to }}
+        </div>
+
+        <p id="distance">Distance: Calculating...</p>
+        <p id="eta">ETA: Calculating...</p>
+    </div>
+
+    <!-- MAP -->
+    <div class="box">
+        <div id="map"></div>
+    </div>
+    <!-- DIRECTIONS BOX -->
+    <div class="box">
+        <h3>🧭 Route Directions</h3>
+        <table id="steps"></table>
+    </div>
+
+    {% endif %}
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+
+    let start = "{{ ride.route_from }}";
+    let end = "{{ ride.route_to }}";
+
+    let map = L.map('map').setView([16.5, 80.6], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: "© OpenStreetMap"
+    }).addTo(map);
+
+    async function getCoords(place) {
+        let res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${place}`);
+        let data = await res.json();
+        if (data.length > 0) {
+            return [data[0].lat, data[0].lon];
+        }
+        return null;
+    }
+
+    let s = await getCoords(start);
+    let e = await getCoords(end);
+
+    if (!s || !e) return;
+
+    let control = L.Routing.control({
+        waypoints: [
+            L.latLng(s[0], s[1]),
+            L.latLng(e[0], e[1])
+        ],
+        addWaypoints: false,
+        draggableWaypoints: false,
+        show: false
+    }).addTo(map);
+
+    control.on('routesfound', function (e) {
+
+        let route = e.routes[0];
+
+        // distance + ETA
+        let km = (route.summary.totalDistance / 1000).toFixed(1);
+        let mins = Math.round(route.summary.totalTime / 60);
+
+        document.getElementById("distance").innerText =
+            "Distance: " + km + " km";
+
+        document.getElementById("eta").innerText =
+            "ETA: " + mins + " mins";
+
+        // steps list
+        let stepsHtml = "";
+        route.instructions.forEach(step => {
+            stepsHtml += `
+                <tr>
+                    <td>${step.text}</td>
+                    <td>${step.distance} m</td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("steps").innerHTML = stepsHtml;
+    });
+
+});
+</script>
+
+</body>
+</html>
