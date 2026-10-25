@@ -21,3 +21,5 @@
    ```bash
    git clone [https://github.com/ualahari/ride_mate.git](https://github.com/ualahari/ride_mate.git)
    cd ride_mate
+2.Live URL:
+https://ridemate-80fv.onrender.com/
